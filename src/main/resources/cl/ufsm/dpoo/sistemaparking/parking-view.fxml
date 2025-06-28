@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="cl.ufsm.dpoo.sistemaparking.ParkingController"
+      alignment="CENTER" fillWidth="true">
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Patente:"/>
+        <TextField fx:id="txtPatente" promptText="Ej: ABC123" />
+        <Label text="Tipo:"/>
+        <ComboBox fx:id="comboTipoVehiculo" promptText="Seleccionar tipo" />
+        <Button fx:id="btnIngresar" text="Ingresar" />
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Buscar/Retirar Patente:"/>
+        <TextField fx:id="txtBuscarPatente" promptText="Ej: ABC123" />
+        <Button fx:id="btnBuscar" text="Buscar" />
+        <Button fx:id="btnCalcularPago" text="Calcular Pago" />
+        <Button fx:id="btnAbrirBarrera" text="Abrir Barrera" />
+    </HBox>
+
+    <Label text="Vista superior del estacionamiento:" />
+
+    <GridPane fx:id="gridParking" hgap="10" vgap="10" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+        <!-- Los espacios se generan dinámicamente -->
+    </GridPane>
+
+    <Label fx:id="lblEstado" text="Esperando acción..." wrapText="true" />
+
+</VBox>
