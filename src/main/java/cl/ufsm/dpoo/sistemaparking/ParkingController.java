@@ -9,6 +9,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.geometry.Pos;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class ParkingController {
@@ -44,21 +45,41 @@ public class ParkingController {
         String patente = txtPatente.getText().trim().toUpperCase();
         String tipo = comboTipoVehiculo.getValue();
 
-        if (!validarPatente(patente) || tipo == null) {
+        if (tipo == null || (!validarPatenteVehiculo(patente) && !("Moto".equals(tipo) && validarPatenteMoto(patente)))) {
             lblEstado.setText("Ingrese patente válida y tipo de vehículo.");
             return;
         }
 
-        Ticket t = sistema.ingresarVehiculo(patente, tipo);
-        if (t != null) {
-            lblEstado.setText("Vehículo ingresado. Ticket #" + t.getNumero());
-            actualizarVista();
-            txtPatente.clear();
-            comboTipoVehiculo.getSelectionModel().clearSelection();
-        } else {
+        // Obtener lista de espacios disponibles
+        var espaciosLibres = sistema.getEspacios().stream()
+                .filter(EspacioParking::isLibre)
+                .map(EspacioParking::getNumero)
+                .toList();
+
+        if (espaciosLibres.isEmpty()) {
             lblEstado.setText("Estacionamiento lleno.");
+            return;
         }
+
+        // Diálogo para seleccionar el espacio
+        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(espaciosLibres.get(0), espaciosLibres);
+        dialog.setTitle("Seleccionar Espacio");
+        dialog.setHeaderText("Asignación manual de espacio");
+        dialog.setContentText("Seleccione el número de espacio:");
+
+        dialog.showAndWait().ifPresent(numeroSeleccionado -> {
+            Ticket t = sistema.ingresarVehiculo(patente, tipo, numeroSeleccionado);
+            if (t != null) {
+                lblEstado.setText("Vehículo ingresado en espacio " + numeroSeleccionado + ". Ticket #" + t.getNumero());
+                actualizarVista();
+                txtPatente.clear();
+                comboTipoVehiculo.getSelectionModel().clearSelection();
+            } else {
+                lblEstado.setText("El espacio seleccionado ya está ocupado.");
+            }
+        });
     }
+
 
     private void buscarVehiculo() {
         String patente = txtBuscarPatente.getText().trim().toUpperCase();
@@ -100,8 +121,18 @@ public class ParkingController {
             rect.setArcHeight(10);
             rect.setFill(e.isLibre() ? Color.LIGHTGREEN : Color.INDIANRED);
 
-            Label num = new Label("Espacio " + e.getNumero());
-            VBox box = new VBox(rect, num);
+            Label labelNumero = new Label(String.valueOf(e.getNumero()));
+            labelNumero.setTextFill(Color.BLACK);
+
+            StackPane contenedorRectangulo = new StackPane(rect, labelNumero);
+            contenedorRectangulo.setPrefSize(60, 60);
+
+            Label labelPatente = new Label();
+            if (!e.isLibre()){
+                labelPatente.setText(e.getVehiculo().getPatente());
+            }
+
+            VBox box = new VBox(contenedorRectangulo, labelPatente);
             box.setAlignment(Pos.CENTER);
             box.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
@@ -114,7 +145,16 @@ public class ParkingController {
         }
     }
 
-    private boolean validarPatente(String patente) {
-        return Pattern.matches("^[A-Z0-9]{1,6}$", patente);
+    private boolean validarPatenteVehiculo(String patente) {
+        String antiguo = "^[A-Z]{2}[0-9]{4}$";
+        String nuevo = "^[BCDFGHJKLPRSTVWXZ]{4}[1-9]{1}[0-9]{1}$";
+        return Pattern.matches(antiguo, patente) || Pattern.matches(nuevo, patente);
+    }
+
+    private boolean validarPatenteMoto(String patente) {
+        String antiguo = "^[A-Z]{2}[0-9]{3,4}$";
+        String nuevo = "^[A-Z]{3}[0-9]{2}$";
+        return Pattern.matches(antiguo, patente) || Pattern.matches(nuevo, patente);
     }
 }
+

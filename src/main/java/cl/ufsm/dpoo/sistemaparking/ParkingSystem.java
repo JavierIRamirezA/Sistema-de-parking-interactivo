@@ -21,18 +21,24 @@ public class ParkingSystem {
         }
     }
 
-    public Ticket ingresarVehiculo(String patente, String tipo) {
-        for (EspacioParking espacio : espacios) {
-            if (espacio.isLibre()) {
-                Vehiculo v = new Vehiculo(patente, tipo);
-                espacio.ocupar(v);
-                Ticket t = new Ticket(contadorTickets++, v);
-                tickets.add(t);
-                return t;
-            }
+    public Ticket ingresarVehiculo(String patente, String tipo, int numeroEspacio) {
+        if (numeroEspacio < 1 || numeroEspacio > espacios.size()) {
+            return null; // espacio fuera de rango
         }
-        return null;
+
+        EspacioParking espacio = espacios.get(numeroEspacio - 1);
+
+        if (!espacio.isLibre()) {
+            return null; // el espacio ya está ocupado
+        }
+
+        Vehiculo v = new Vehiculo(patente, tipo);
+        espacio.ocupar(v);
+        Ticket t = new Ticket(contadorTickets++, v);
+        tickets.add(t);
+        return t;
     }
+
 
     public boolean retirarVehiculo(String patente) {
         for (EspacioParking espacio : espacios) {
@@ -81,4 +87,6 @@ public class ParkingSystem {
     public List<EspacioParking> getEspacios() {
         return espacios;
     }
+
+
 }
