@@ -83,6 +83,15 @@ public class ParkingSystem {
             default -> 100;
         };
     }
+    public long calcularMinutos(String patente) {
+        for (Ticket t : tickets) {
+            if (t.getVehiculo().getPatente().equalsIgnoreCase(patente)) {
+                return Duration.between(t.getHoraEntrada(), LocalDateTime.now()).toMinutes();
+            }
+        }
+        return 0;
+    }
+
 
     public List<EspacioParking> getEspacios() {
         return espacios;

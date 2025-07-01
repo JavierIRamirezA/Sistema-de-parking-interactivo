@@ -2,9 +2,8 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.shape.Rectangle?>
 
-<VBox spacing="10" xmlns="http://javafx.com/javafx"
+<VBox spacing="15" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="cl.ufsm.dpoo.sistemaparking.ParkingController"
       alignment="CENTER" fillWidth="true">
@@ -19,17 +18,23 @@
 
     <HBox spacing="10" alignment="CENTER">
         <Label text="Buscar/Retirar Patente:"/>
-        <TextField fx:id="txtBuscarPatente" promptText="Ej: ABC123" />
-        <Button fx:id="btnBuscar" text="Buscar" />
-        <Button fx:id="btnCalcularPago" text="Calcular Pago" />
-        <Button fx:id="btnAbrirBarrera" text="Abrir Barrera" />
+        <TextField fx:id="txtBuscarPatente" promptText="Ej: ABC123"/>
+
+        <Label text="Descuento %:"/>
+        <TextField fx:id="txtDescuento" promptText="0" maxWidth="50"/>
+
+        <Button fx:id="btnBuscar" text="Buscar"/>
+        <Button fx:id="btnCalcularPago" text="Calcular Pago"/>
+        <Button fx:id="btnAbrirBarrera" text="Abrir Barrera"/>
     </HBox>
 
-    <Label text="Vista superior del estacionamiento:" />
 
-    <GridPane fx:id="gridParking" hgap="10" vgap="10" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-        <!-- Los espacios se generan dinámicamente -->
-    </GridPane>
+    <Label text="Vista Superior del Estacionamiento:" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+
+    <GridPane fx:id="gridParking" hgap="10" vgap="10"
+              VBox.vgrow="ALWAYS" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
+              alignment="CENTER" />
+
 
     <Label fx:id="lblEstado" text="Esperando acción..." wrapText="true" />
 

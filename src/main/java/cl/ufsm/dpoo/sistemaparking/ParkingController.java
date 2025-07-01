@@ -25,12 +25,13 @@ public class ParkingController {
 
     @FXML private Label lblEstado;
     @FXML private GridPane gridParking;
+    @FXML private TextField txtDescuento;
 
     private ParkingSystem sistema;
 
     @FXML
     public void initialize() {
-        sistema = new ParkingSystem(12);
+        sistema = new ParkingSystem(36);
         comboTipoVehiculo.getItems().addAll("Auto", "Moto", "Camioneta", "Camión");
 
         btnIngresar.setOnAction(e -> ingresarVehiculo());
@@ -84,55 +85,92 @@ public class ParkingController {
     private void buscarVehiculo() {
         String patente = txtBuscarPatente.getText().trim().toUpperCase();
         EspacioParking e = sistema.buscarVehiculo(patente);
-        lblEstado.setText(e != null ? "Vehículo en espacio " + e.getNumero() : "Vehículo no encontrado.");
+
+        if (e != null) {
+            long minutos = sistema.calcularMinutos(patente);
+            lblEstado.setText("Vehículo en espacio " + e.getNumero() + ". Tiempo de estadía: " + minutos + " min.");
+        } else {
+            lblEstado.setText("Vehículo no encontrado.");
+        }
     }
+
 
     private void calcularPago() {
         String patente = txtBuscarPatente.getText().trim().toUpperCase();
         EspacioParking e = sistema.buscarVehiculo(patente);
+
         if (e != null) {
             double monto = sistema.calcularMonto(patente);
+            double descuento = 0;
+            try {
+                descuento = Double.parseDouble(txtDescuento.getText().trim());
+            } catch (NumberFormatException ignored) { }
+
+            if (descuento > 0 && descuento <= 100) {
+                monto -= (monto * descuento / 100);
+            }
             lblEstado.setText("Monto a pagar: $" + monto);
         } else {
             lblEstado.setText("Vehículo no encontrado.");
         }
     }
 
+
     private void abrirBarrera() {
         String patente = txtBuscarPatente.getText().trim().toUpperCase();
-        if (sistema.retirarVehiculo(patente)) {
-            lblEstado.setText("Pago recibido. Barrera abierta.");
-            actualizarVista();
+        EspacioParking e = sistema.buscarVehiculo(patente);
+
+        if (e != null) {
+            sistema.retirarVehiculo(patente);
+            lblEstado.setText("Pago recibido. Barrera abierta. Espacio liberado.");
+
+            // Recuperar la casilla correctamente
+            VBox box = (VBox) gridParking.getChildren().get(e.getNumero() - 1);
+            StackPane contenedor = (StackPane) box.getChildren().get(0);
+            contenedor.setStyle("-fx-background-color: yellow; -fx-border-color: #555;");
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {}
+                javafx.application.Platform.runLater(this::actualizarVista);
+            }).start();
         } else {
             lblEstado.setText("Vehículo no encontrado.");
         }
     }
 
+
+
+
     private void actualizarVista() {
         gridParking.getChildren().clear();
-        int columnas = 4;
+        int columnas = 6; // 6 columnas x 6 filas = 36 espacios
 
         for (int i = 0; i < sistema.getEspacios().size(); i++) {
             EspacioParking e = sistema.getEspacios().get(i);
-            Rectangle rect = new Rectangle();
-            rect.setWidth(60);
-            rect.setHeight(60);
-            rect.setArcWidth(10);
-            rect.setArcHeight(10);
-            rect.setFill(e.isLibre() ? Color.LIGHTGREEN : Color.INDIANRED);
+
+            StackPane contenedor = new StackPane();
+            contenedor.setStyle(e.isLibre()
+                    ? "-fx-background-color: lightgreen; -fx-border-color: #555; -fx-border-radius: 5;"
+                    : "-fx-background-color: indianred; -fx-border-color: #555; -fx-border-radius: 5;");
 
             Label labelNumero = new Label(String.valueOf(e.getNumero()));
             labelNumero.setTextFill(Color.BLACK);
 
-            StackPane contenedorRectangulo = new StackPane(rect, labelNumero);
-            contenedorRectangulo.setPrefSize(60, 60);
+            contenedor.getChildren().add(labelNumero);
+            contenedor.setPrefSize(70, 70);
+            contenedor.setMaxSize(70, 70);
 
-            Label labelPatente = new Label();
-            if (!e.isLibre()){
-                labelPatente.setText(e.getVehiculo().getPatente());
+
+            if (!e.isLibre()) {
+                contenedor.setOnMouseClicked(event -> {
+                    txtBuscarPatente.setText(e.getVehiculo().getPatente());
+                    lblEstado.setText("Vehículo seleccionado: " + e.getVehiculo().getPatente());
+                });
             }
 
-            VBox box = new VBox(contenedorRectangulo, labelPatente);
+            VBox box = new VBox(contenedor);
             box.setAlignment(Pos.CENTER);
             box.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
@@ -145,11 +183,19 @@ public class ParkingController {
         }
     }
 
+
+
+
     private boolean validarPatenteVehiculo(String patente) {
+        // Formato antiguo: 2 letras + 4 números (Ej: AB1234)
         String antiguo = "^[A-Z]{2}[0-9]{4}$";
-        String nuevo = "^[BCDFGHJKLPRSTVWXZ]{4}[1-9]{1}[0-9]{1}$";
+
+        // Formato nuevo: 4 letras + 2 números (Ej: FBXA86)
+        String nuevo = "^[A-Z]{4}[0-9]{2}$";
+
         return Pattern.matches(antiguo, patente) || Pattern.matches(nuevo, patente);
     }
+
 
     private boolean validarPatenteMoto(String patente) {
         String antiguo = "^[A-Z]{2}[0-9]{3,4}$";
