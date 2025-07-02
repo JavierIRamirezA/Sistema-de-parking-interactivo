@@ -1,5 +1,8 @@
 package cl.ufsm.dpoo.sistemaparking;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -10,11 +13,16 @@ public class ParkingSystem {
     private List<EspacioParking> espacios;
     private List<Ticket> tickets;
     private int contadorTickets;
-
+    private int cantidadAutos, cantidadCamiones, cantidadMotos, cantidadCamionetas;
+    private double totalRecaudado;
     public ParkingSystem(int cantidadEspacios) {
         espacios = new ArrayList<>();
         tickets = new ArrayList<>();
         contadorTickets = 1;
+        cantidadAutos = 0;
+        cantidadCamiones = 0;
+        cantidadMotos = 0;
+        cantidadCamionetas = 0;
 
         for (int i = 1; i <= cantidadEspacios; i++) {
             espacios.add(new EspacioParking(i));
@@ -33,6 +41,10 @@ public class ParkingSystem {
         }
 
         Vehiculo v = new Vehiculo(patente, tipo);
+        if(tipo.toLowerCase().equals("auto")) cantidadAutos++;
+        if(tipo.toLowerCase().equals("moto")) cantidadMotos++;
+        if(tipo.toLowerCase().equals("camioneta")) cantidadCamionetas++;
+        if(tipo.toLowerCase().equals("camion")) cantidadCamiones++;
         espacio.ocupar(v);
         Ticket t = new Ticket(contadorTickets++, v);
         tickets.add(t);
@@ -97,5 +109,34 @@ public class ParkingSystem {
         return espacios;
     }
 
+    public boolean generarReporte(){
+        String nombre_archivo = "reporte.txt";
+        double ocupados = 0;
+        String nl = System.lineSeparator();
+        for(EspacioParking espacio : espacios){
+            if(!espacio.isLibre()){
+                ocupados++;
+            }
+        }
+        ocupados = ocupados/espacios.size() * 100;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombre_archivo, false))) {
+            writer.write("La cantidad de autos registrados es: " + cantidadAutos + nl);
+            writer.write("La cantidad de motos registradas es: " + cantidadMotos + nl);
+            writer.write("La cantidad de camionetas registradas es: " + cantidadCamionetas + nl);
+            writer.write("La cantidad de camiones registrados es: " + cantidadCamiones + nl);
+            writer.write("------------------------" + nl);
+            writer.write("Ocupacion actual: " + ocupados + "%" + nl);
+            writer.write("Total recaudado: "+ totalRecaudado + nl);
+            System.out.println("✅ Reporte generado correctamente.");
+            return true;
+        } catch (IOException e) {
+            System.err.println("❌ Error al generar el reporte: " + e.getMessage());
+        }
+        return false;
+    }
 
+
+    public void anadirPago(double valor){
+        totalRecaudado = totalRecaudado+valor;
+    }
 }

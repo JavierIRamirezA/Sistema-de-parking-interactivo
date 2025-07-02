@@ -38,4 +38,7 @@
 
     <Label fx:id="lblEstado" text="Esperando acción..." wrapText="true" />
 
+    <HBox alignment="CENTER">
+        <Button fx:id="btnGenerarReporte" text="Generar Reporte" />
+    </HBox>
 </VBox>

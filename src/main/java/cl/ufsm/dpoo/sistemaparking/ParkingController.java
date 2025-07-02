@@ -26,6 +26,7 @@ public class ParkingController {
     @FXML private Label lblEstado;
     @FXML private GridPane gridParking;
     @FXML private TextField txtDescuento;
+    @FXML private Button btnGenerarReporte;
 
     private ParkingSystem sistema;
 
@@ -38,6 +39,7 @@ public class ParkingController {
         btnBuscar.setOnAction(e -> buscarVehiculo());
         btnCalcularPago.setOnAction(e -> calcularPago());
         btnAbrirBarrera.setOnAction(e -> abrirBarrera());
+        btnGenerarReporte.setOnAction(e->generarReporte());
 
         actualizarVista();
     }
@@ -121,6 +123,7 @@ public class ParkingController {
         EspacioParking e = sistema.buscarVehiculo(patente);
 
         if (e != null) {
+            sistema.anadirPago(sistema.calcularMonto(patente));
             sistema.retirarVehiculo(patente);
             lblEstado.setText("Pago recibido. Barrera abierta. Espacio liberado.");
 
@@ -201,6 +204,14 @@ public class ParkingController {
         String antiguo = "^[A-Z]{2}[0-9]{3,4}$";
         String nuevo = "^[A-Z]{3}[0-9]{2}$";
         return Pattern.matches(antiguo, patente) || Pattern.matches(nuevo, patente);
+    }
+
+    private void generarReporte(){
+        if(sistema.generarReporte()){
+            lblEstado.setText("Reporte generado exitosamente.");
+            return;
+        }
+        lblEstado.setText("Hubo un fallo al generar el reporte.");
     }
 }
 
