@@ -44,7 +44,7 @@ public class ParkingSystem {
         if(tipo.toLowerCase().equals("auto")) cantidadAutos++;
         if(tipo.toLowerCase().equals("moto")) cantidadMotos++;
         if(tipo.toLowerCase().equals("camioneta")) cantidadCamionetas++;
-        if(tipo.toLowerCase().equals("camion")) cantidadCamiones++;
+        if(tipo.toLowerCase().equals("camión")) cantidadCamiones++;
         espacio.ocupar(v);
         Ticket t = new Ticket(contadorTickets++, v);
         tickets.add(t);
