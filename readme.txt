@@ -1,4 +1,10 @@
+Autores:
+Ernesto Gamero General
+Matias Perez Nieto
+Javier Ramírez Álvarez
+Sebastián Sobarzo León
 
+Para descargar el proyecto, hacer click en la etiqueta con tag Final en el apartado de Releases, a la derecha de esta página del repositorio.
 Como requisito para ejecutar la aplicación, antes se debe:
 1. tener los paquetes javafx, obtenible desde https://gluonhq.com/products/javafx/ y controlsfx, obtenible desde https://mvnrepository.com/artifact/org.controlsfx/controlsfx.
 2. Dentro del directorio donde se encuentra la carpeta src, crear directorio con nombre lib, ubicando la carpeta javafx-sdk-XX.X.X y el archivo controlsfx-11.2.2.jar dentro del directorio lib.
