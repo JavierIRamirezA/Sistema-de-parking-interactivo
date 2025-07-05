@@ -7,14 +7,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.Duration;
-
+/**
+ * Clase para manejar el sistema de Parking.
+ * */
 public class ParkingSystem {
-
+/**
+ *Lista que guarda cada espacio del estacionamiento.
+ * */
     private List<EspacioParking> espacios;
+    /** Lista que almacena los tickets entregados*/
     private List<Ticket> tickets;
+    /**
+     * Variable que almacena el numero de ticket que se debe entregar al siguiente vehiculo.
+     * */
     private int contadorTickets;
-    private int cantidadAutos, cantidadCamiones, cantidadMotos, cantidadCamionetas;
+    /**
+     *  Cantidad de vehiculos tipo auto que han ingresado.
+     * */
+    private int cantidadAutos;
+    /** Cantidad de vehiculos tipo camion que han ingresado.*/
+    private int cantidadCamiones;
+    /** Cantidad de vehiculos tipo moto que han ingresado.*/
+    private int cantidadMotos;
+    /** Cantidad de vehiculos tipo camioneta que han ingresado.*/
+    private int cantidadCamionetas;
+    /** Cantidad total de dinero recaudado*/
     private double totalRecaudado;
+
+    /**
+     * Metodo constructor, inicializa el sistema de parking
+     * @param cantidadEspacios Cantidad de espacios que posee le estacionamiento
+     * */
     public ParkingSystem(int cantidadEspacios) {
         espacios = new ArrayList<>();
         tickets = new ArrayList<>();
@@ -28,6 +51,13 @@ public class ParkingSystem {
             espacios.add(new EspacioParking(i));
         }
     }
+    /**
+     * Ingresar un vehiculo al sistema.
+     * @param patente   Patente del vehiculo a ingresar.
+     * @param tipo      Tipo del vehiculo a ingresar.
+     * @param numeroEspacio Numero de estacionamiento correspondiente.
+     * @return Ticket correspondiente al vehiculo.
+     * */
 
     public Ticket ingresarVehiculo(String patente, String tipo, int numeroEspacio) {
         if (numeroEspacio < 1 || numeroEspacio > espacios.size()) {
@@ -50,7 +80,11 @@ public class ParkingSystem {
         tickets.add(t);
         return t;
     }
-
+    /**
+     * Retirar un vehiculo del sistema
+     * @param patente Patente del vehiculo a retirar.
+     * @return True si el vehiculo es retirado correctamente.
+     * */
 
     public boolean retirarVehiculo(String patente) {
         for (EspacioParking espacio : espacios) {
@@ -61,6 +95,11 @@ public class ParkingSystem {
         }
         return false;
     }
+    /**
+     * Busca el espacio de aparcamiento del vehiculo.
+     * @param patente Patente del vehiculo a buscar.
+     * @return Espacio de aparcamiento del vehiculo.
+     * */
 
     public EspacioParking buscarVehiculo(String patente) {
         for (EspacioParking espacio : espacios) {
@@ -85,6 +124,11 @@ public class ParkingSystem {
         }
         return 0;
     }
+    /**
+     * Busca la tarifa por minuto dependiendo del tipo.
+     * @param tipo Tipo de auto a buscar.
+     * @return Valor de tarifa por minuto.
+     * */
 
     private double getTarifaPorTipo(String tipo) {
         return switch (tipo.toLowerCase()) {
@@ -95,6 +139,12 @@ public class ParkingSystem {
             default -> 100;
         };
     }
+
+    /**
+     * Calcula los minutos entre el ingreso de un vehiculo y la hora actual.
+     * @param patente Patente del vehiculo correspondiente al calculo.
+     * @return Cantidad de minutos.
+     * */
     public long calcularMinutos(String patente) {
         for (Ticket t : tickets) {
             if (t.getVehiculo().getPatente().equalsIgnoreCase(patente)) {
@@ -104,11 +154,17 @@ public class ParkingSystem {
         return 0;
     }
 
-
+    /**
+     * Obtener la lista de espacios.
+     * @return Lista de espacios.
+     * */
     public List<EspacioParking> getEspacios() {
         return espacios;
     }
 
+    /** Genera un reporte de extension .txt
+     * @return True si el reporte se genera correctamente.
+     * */
     public boolean generarReporte(){
         String nombre_archivo = "reporte.txt";
         double ocupados = 0;
@@ -135,6 +191,10 @@ public class ParkingSystem {
         return false;
     }
 
+    /**
+     * Suma un valor al total recaudado.
+     * @param valor Valor a sumar.
+     * */
 
     public void anadirPago(double valor){
         totalRecaudado = totalRecaudado+valor;
