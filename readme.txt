@@ -6,7 +6,7 @@ Como requisito para ejecutar la aplicación, antes se debe:
 
 Ahora, para compilar, ejecutar y borrar archivos compilados de este proyecto se debe, dentro del directorio donde se encuentra makefile en el proyecto:
 
-1.Compilación: Abrir terminal y ejecutar comando "make" . Si no puede ejecutar este comando, considere la instalación de GNU Make.
+1.Compilación: Abrir terminal y ejecutar comando "make" . Si no puede ejecutar este comando, considere la instalación de GNU Make desde https://www.gnu.org/software/make/.
 
 2.Ejecución: Abrir terminal y ejecutar comando "make run". Este comando ejecuta una linea de compilación que verifica si las versiones de los archivos fuente son las mismas que las compiladas, si los archivos fuente fueron modificados posterior a la compilación, vuelve a compilar los archivos fuente y ejecuta el programa.
 
